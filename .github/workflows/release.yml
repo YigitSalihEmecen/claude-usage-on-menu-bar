@@ -16,11 +16,18 @@ permissions:
 
 jobs:
   release:
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
+      - name: Toolchain
+        run: |
+          swift --version
+          xcodebuild -version || true
+          echo "xcode-select -p: $(xcode-select -p)"
+          ls "$(xcode-select -p)/Platforms/MacOSX.platform/Developer/Library/Frameworks" 2>/dev/null | grep -i testing || true
 
       - name: Run tests
         run: Scripts/test.sh
