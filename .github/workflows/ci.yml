@@ -1,0 +1,26 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run tests
+        run: Scripts/test.sh
+
+      - name: Build universal app
+        run: Scripts/build.sh --universal
+
+      - name: Verify both architectures are present
+        run: lipo -archs "build/Claude Usage.app/Contents/MacOS/ClaudeUsage" | tee /dev/stderr | grep -q arm64
