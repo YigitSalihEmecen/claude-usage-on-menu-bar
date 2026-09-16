@@ -39,7 +39,7 @@ enum Keychain {
         ]
         let update: [String: Any] = [
             kSecValueData as String: data,
-            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
+            kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlocked,
         ]
         if SecItemUpdate(base as CFDictionary, update as CFDictionary) == errSecSuccess { return true }
         return SecItemAdd(base.merging(update) { $1 } as CFDictionary, nil) == errSecSuccess

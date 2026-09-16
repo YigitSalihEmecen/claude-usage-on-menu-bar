@@ -25,6 +25,7 @@ final class UsageStore {
 
     private var credentials: Credentials?
     private var refreshTask: Task<Void, Never>?
+    private var inFlight: Task<Void, Never>?
     private var clock: Timer?
 
     var snapshot: UsageSnapshot? {
@@ -86,6 +87,14 @@ final class UsageStore {
     }
 
     func refresh() async {
+        if let inFlight { return await inFlight.value }
+        let task = Task { await performRefresh() }
+        inFlight = task
+        await task.value
+        inFlight = nil
+    }
+
+    private func performRefresh() async {
         guard let credentials else {
             phase = .signedOut
             return

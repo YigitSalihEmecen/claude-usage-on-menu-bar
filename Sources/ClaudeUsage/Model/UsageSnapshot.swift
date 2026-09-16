@@ -39,7 +39,6 @@ struct ExtraUsage: Equatable {
 struct UsageSnapshot: Equatable {
     var windows: [UsageWindow]
     var extra: ExtraUsage?
-    var fetchedAt: Date
 
     var session: UsageWindow? { windows.first { $0.kind == .session } }
     var weekly: UsageWindow? { windows.first { $0.kind == .weekly } }
@@ -49,7 +48,7 @@ struct UsageSnapshot: Equatable {
 // MARK: - Decoding
 
 extension UsageSnapshot {
-    init(payload: UsagePayload, now: Date = .now) {
+    init(payload: UsagePayload) {
         var windows: [UsageWindow] = []
 
         if let limits = payload.limits, !limits.isEmpty {
@@ -115,7 +114,6 @@ extension UsageSnapshot {
                 fraction: $0.utilization.map(UsageSnapshot.clamp)
             )
         }
-        self.fetchedAt = now
     }
 
     private static func clamp(_ percent: Double?) -> Double {

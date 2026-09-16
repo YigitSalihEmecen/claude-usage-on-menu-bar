@@ -91,6 +91,9 @@ struct OAuthService {
     static func signIn(pastedCode raw: String, session: Session) async throws -> Credentials {
         let parts = raw.trimmingCharacters(in: .whitespacesAndNewlines).split(separator: "#")
         guard let code = parts.first, !code.isEmpty else { throw AuthError.noCode }
+        if let state = parts.dropFirst().first, state != session.state {
+            throw AuthError.stateMismatch
+        }
         return try await exchange(code: String(code), session: session)
     }
 

@@ -21,7 +21,7 @@ struct PanelRootView: View {
                 if showingSettings {
                     SettingsPane(store: store, preferences: store.preferences)
                 } else {
-                    content
+                    UsageContentView(store: store)
                 }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -59,11 +59,7 @@ struct PanelRootView: View {
             Spacer()
 
             if !showingSettings, store.isSignedIn {
-                IconButton(systemImage: "arrow.clockwise", help: "Refresh now") {
-                    Task { await store.refresh() }
-                }
-                .rotationEffect(.degrees(store.phase == .loading ? 360 : 0))
-                .animation(.linear(duration: 0.6), value: store.phase == .loading)
+                RefreshButton(store: store)
             }
 
             IconButton(
@@ -77,7 +73,28 @@ struct PanelRootView: View {
         .padding(.vertical, 11)
     }
 
-    // MARK: - Body states
+}
+
+/// Isolated so a completed fetch does not invalidate the whole panel.
+private struct RefreshButton: View {
+    let store: UsageStore
+
+    var body: some View {
+        let isLoading = store.phase == .loading
+        IconButton(systemImage: "arrow.clockwise", help: "Refresh now") {
+            Task { await store.refresh() }
+        }
+        .rotationEffect(.degrees(isLoading ? 360 : 0))
+        .animation(.linear(duration: 0.6), value: isLoading)
+    }
+}
+
+private struct UsageContentView: View {
+    let store: UsageStore
+
+    var body: some View {
+        content
+    }
 
     @ViewBuilder
     private var content: some View {

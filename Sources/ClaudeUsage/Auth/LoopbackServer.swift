@@ -14,15 +14,24 @@ actor LoopbackServer {
 
     let port: UInt16
 
+    private var endpointPort: NWEndpoint.Port {
+        NWEndpoint.Port(rawValue: port) ?? .any
+    }
+
     init(port: UInt16) {
         self.port = port
     }
 
     func waitForCallback() async throws -> CallbackQuery {
-        let listener = try NWListener(
-            using: .tcp,
-            on: NWEndpoint.Port(rawValue: port) ?? .any
-        )
+        // Bind to 127.0.0.1 explicitly; default parameters listen on every
+        // interface, exposing the callback to the local network during sign-in.
+        // The port must come from requiredLocalEndpoint: passing `on:` as well
+        // makes NWListener creation fail.
+        let parameters = NWParameters.tcp
+        parameters.requiredLocalEndpoint = .hostPort(host: .ipv4(.loopback), port: endpointPort)
+        parameters.allowLocalEndpointReuse = true
+
+        let listener = try NWListener(using: parameters)
         self.listener = listener
 
         return try await withTaskCancellationHandler {
@@ -30,10 +39,7 @@ actor LoopbackServer {
                 self.continuation = continuation
                 listener.newConnectionHandler = { connection in
                     connection.start(queue: .main)
-                    connection.receive(minimumIncompleteLength: 1, maximumLength: 8192) { data, _, _, _ in
-                        let request = data.flatMap { String(data: $0, encoding: .utf8) } ?? ""
-                        Task { await self.handle(request: request, on: connection) }
-                    }
+                    self.receiveRequestLine(on: connection, accumulated: Data())
                 }
                 listener.stateUpdateHandler = { state in
                     if case .failed(let error) = state {
@@ -44,6 +50,21 @@ actor LoopbackServer {
             }
         } onCancel: {
             Task { await self.finish(with: .failure(CancellationError())) }
+        }
+    }
+
+    /// Reads until the request line is complete, so a fragmented GET still parses.
+    private nonisolated func receiveRequestLine(on connection: NWConnection, accumulated: Data) {
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 4096) { data, _, isComplete, error in
+            var buffer = accumulated
+            if let data { buffer.append(data) }
+
+            let text = String(decoding: buffer, as: UTF8.self)
+            guard text.contains("\r\n") || isComplete || error != nil || buffer.count >= 8192 else {
+                self.receiveRequestLine(on: connection, accumulated: buffer)
+                return
+            }
+            Task { await self.handle(request: text, on: connection) }
         }
     }
 
