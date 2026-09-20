@@ -8,9 +8,11 @@
 See how much Claude usage you have left, right in your menu bar — no need to open
 the app to check.
 
-<!-- Screenshot: open the panel, press ⇧⌘4, save as docs/panel.png, then uncomment.
-<p align="center"><img src="docs/panel.png" width="320" alt="The Claude Usage panel"></p>
--->
+<img width="607" height="46" alt="image" src="https://github.com/user-attachments/assets/b21de41f-e372-4a7e-a63a-e650f28e783f" />
+
+<img width="652" height="339" alt="image" src="https://github.com/user-attachments/assets/56144374-74bf-4403-9341-7c1e574480bd" />
+
+
 
 - Your session usage and time until reset, always visible and updated every minute.
 - Click for detail: weekly limits, per-model limits, and exact reset times.
