@@ -16,7 +16,9 @@ the app to check.
 
 - Your session usage and time until reset, always visible and updated every minute.
 - Click for detail: weekly limits, per-model limits, and exact reset times.
-- How full the context window is in your most recent Claude Code session.
+- **Context window usage** for the Claude Code session you worked in most recently,
+  shown in the panel and, if you turn it on in settings, in the menu bar too. It is read
+  from the session transcript on your Mac, so it costs no extra network calls.
 - Sign in with your browser. Already use Claude Code? One click reuses that login.
 - No Dock icon, no windows. Follows light and dark mode.
 
@@ -64,3 +66,8 @@ endpoint Anthropic has not documented, so the numbers may occasionally be wrong 
 stop working if Anthropic changes it.
 
 Not affiliated with or endorsed by Anthropic. [MIT licensed](LICENSE).
+
+## Credits
+
+Context window usage was contributed by [Ali Kömürcü](https://github.com/alikomurcu)
+in [#1](https://github.com/YigitSalihEmecen/claude-usage-on-menu-bar/pull/1).
