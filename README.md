@@ -16,6 +16,7 @@ the app to check.
 
 - Your session usage and time until reset, always visible and updated every minute.
 - Click for detail: weekly limits, per-model limits, and exact reset times.
+- How full the context window is in your most recent Claude Code session.
 - Sign in with your browser. Already use Claude Code? One click reuses that login.
 - No Dock icon, no windows. Follows light and dark mode.
 

@@ -51,6 +51,40 @@ struct UsageBar: View {
     }
 }
 
+/// Context window of the most recent Claude Code session. Unlike the usage
+/// windows this is read from disk, so it carries the project it came from.
+struct ContextRow: View {
+    let context: ContextUsage
+    let warnThreshold: Double
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            HStack(alignment: .firstTextBaseline) {
+                Text("Context")
+                    .font(.system(size: 12, weight: .medium))
+                Spacer(minLength: 8)
+                Text("\(Format.tokens(context.tokens)) / \(Format.compactTokens(context.limit))")
+                    .font(.system(size: 11))
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+                Text("\(context.percent)%")
+                    .font(.system(size: 12, weight: .medium))
+                    .monospacedDigit()
+                    .foregroundStyle(.secondary)
+            }
+            UsageBar(
+                fraction: context.fraction,
+                color: context.fraction.usageColor(warnThreshold: warnThreshold)
+            )
+            Text(context.project)
+                .font(.system(size: 10))
+                .foregroundStyle(.tertiary)
+                .lineLimit(1)
+                .truncationMode(.middle)
+        }
+    }
+}
+
 struct WindowRow: View {
     let window: UsageWindow
     let now: Date

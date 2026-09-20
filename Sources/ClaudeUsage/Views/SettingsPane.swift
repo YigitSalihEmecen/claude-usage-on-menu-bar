@@ -43,6 +43,14 @@ struct SettingsPane: View {
                     .frame(width: 138)
                 }
 
+                LabeledRow("Context in menu bar") {
+                    Toggle("", isOn: $preferences.showContextInMenuBar)
+                        .toggleStyle(.switch)
+                        .controlSize(.mini)
+                        .labelsHidden()
+                        .frame(width: 138, alignment: .leading)
+                }
+
                 LabeledRow("Start at login") {
                     Toggle("", isOn: $preferences.launchAtLogin)
                         .toggleStyle(.switch)
