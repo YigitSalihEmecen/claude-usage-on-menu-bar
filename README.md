@@ -10,7 +10,7 @@ the app to check.
 
 <img width="607" height="46" alt="image" src="https://github.com/user-attachments/assets/b21de41f-e372-4a7e-a63a-e650f28e783f" />
 
-<img width="652" height="339" alt="image" src="https://github.com/user-attachments/assets/56144374-74bf-4403-9341-7c1e574480bd" />
+<img width="685" height="405" alt="image" src="https://github.com/user-attachments/assets/698b2884-950d-4389-8148-e8b48aa59267" />
 
 
 
