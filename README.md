@@ -8,25 +8,13 @@
 See how much Claude usage you have left, right in your menu bar — no need to open
 the app to check.
 
+<p align="left">
+  <img width="712" height="53" alt="image" src="https://github.com/user-attachments/assets/fcae62cd-9313-4f11-ad8a-431848a8f959" />
+</p>
 
-<table align="center" style="border: none; border-collapse: collapse;">
-  <!-- Top menu bar snippet centered across both columns -->
-  <tr>
-    <td colspan="2" align="center" style="border: none; padding-bottom: 12px;">
-      <img width="562" alt="Menu Bar" src="https://github.com/user-attachments/assets/fcae62cd-9313-4f11-ad8a-431848a8f959" />
-    </td>
-  </tr>
-  <!-- Bottom two windows side by side -->
-  <tr>
-    <td align="center" valign="top" style="border: none; padding: 6px;">
-      <img width="348" alt="Main Window" src="https://github.com/user-attachments/assets/accfc2dd-193a-4a88-a2b3-2460e677b249" />
-    </td>
-    <td align="center" valign="top" style="border: none; padding: 6px;">
-      <img width="348" alt="Settings Window" src="https://github.com/user-attachments/assets/d3425ae4-1961-47d8-8cad-55d2ef27ba4d" />
-    </td>
-  </tr>
-</table>
-
+<p align="left">
+  <img align="top" width="348" height="421" alt="image" src="https://github.com/user-attachments/assets/accfc2dd-193a-4a88-a2b3-2460e677b249" /><img width="16" height="1" alt="" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='1'></svg>" /><img align="top" width="348" height="351" alt="image" src="https://github.com/user-attachments/assets/d3425ae4-1961-47d8-8cad-55d2ef27ba4d" />
+</p>
 
 - Your session usage and time until reset, always visible and updated every minute.
 - Click for detail: weekly limits, per-model limits, and exact reset times.
