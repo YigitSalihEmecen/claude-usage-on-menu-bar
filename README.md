@@ -10,8 +10,16 @@ the app to check.
 
 <img width="562" height="42" alt="image" src="https://github.com/user-attachments/assets/fcae62cd-9313-4f11-ad8a-431848a8f959" />
 
-<img width="685" height="405" alt="image" src="https://github.com/user-attachments/assets/698b2884-950d-4389-8148-e8b48aa59267" />
-
+<table>
+  <tr>
+    <td valign="top">
+      <img width="348" height="421" alt="image" src="https://github.com/user-attachments/assets/accfc2dd-193a-4a88-a2b3-2460e677b249" />
+    </td>
+    <td valign="top">
+      <img width="348" height="351" alt="image" src="https://github.com/user-attachments/assets/d3425ae4-1961-47d8-8cad-55d2ef27ba4d" />
+    </td>
+  </tr>
+</table>
 
 
 - Your session usage and time until reset, always visible and updated every minute.
