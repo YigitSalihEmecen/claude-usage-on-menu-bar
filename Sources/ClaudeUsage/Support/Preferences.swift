@@ -42,6 +42,12 @@ final class Preferences {
         didSet { defaults.set(warnThreshold, forKey: Key.warnThreshold) }
     }
 
+    /// Also show the current session's context usage in the menu bar. The
+    /// panel row is always shown.
+    var showContextInMenuBar: Bool {
+        didSet { defaults.set(showContextInMenuBar, forKey: Key.showContextInMenuBar) }
+    }
+
     var launchAtLogin: Bool {
         didSet {
             guard launchAtLogin != oldValue else { return }
@@ -55,6 +61,7 @@ final class Preferences {
         static let display = "menuBarDisplay"
         static let refreshInterval = "refreshInterval"
         static let warnThreshold = "warnThreshold"
+        static let showContextInMenuBar = "showContextInMenuBar"
     }
 
     static let refreshOptions = [30, 60, 120, 300]
@@ -63,6 +70,7 @@ final class Preferences {
         display = MenuBarDisplay(rawValue: defaults.string(forKey: Key.display) ?? "") ?? .percentAndTime
         refreshInterval = defaults.object(forKey: Key.refreshInterval) as? Int ?? 60
         warnThreshold = defaults.object(forKey: Key.warnThreshold) as? Double ?? 0.8
+        showContextInMenuBar = defaults.object(forKey: Key.showContextInMenuBar) as? Bool ?? false
         launchAtLogin = SMAppService.mainApp.status == .enabled
     }
 

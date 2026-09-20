@@ -29,6 +29,23 @@ enum Format {
         )
     }
 
+    /// "50,009" — grouped, for the panel where there is room.
+    static func tokens(_ count: Int) -> String {
+        count.formatted(.number.grouping(.automatic))
+    }
+
+    /// "50K", "1.0M" — for the context limit and the menu bar.
+    static func compactTokens(_ count: Int) -> String {
+        if count >= 1_000_000 {
+            let millions = Double(count) / 1_000_000
+            return millions == millions.rounded()
+                ? "\(Int(millions))M"
+                : String(format: "%.1fM", millions)
+        }
+        if count >= 1_000 { return "\(count / 1_000)K" }
+        return "\(count)"
+    }
+
     static func relative(_ date: Date, from now: Date = .now) -> String {
         let seconds = Int(now.timeIntervalSince(date))
         if seconds < 5 { return "just now" }

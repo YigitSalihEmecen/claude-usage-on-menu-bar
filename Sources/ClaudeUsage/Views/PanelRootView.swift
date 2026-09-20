@@ -142,6 +142,13 @@ private struct UsageContentView: View {
                 .padding(.vertical, 14)
             }
 
+            if let context = store.contextUsage {
+                Divider().opacity(0.6)
+                ContextRow(context: context, warnThreshold: store.preferences.warnThreshold)
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 12)
+            }
+
             if let extra = snapshot.extra, extra.isEnabled {
                 Divider().opacity(0.6)
                 extraUsageSection(extra)

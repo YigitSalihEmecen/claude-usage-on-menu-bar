@@ -18,6 +18,9 @@ final class UsageStore {
     private(set) var isSigningIn = false
     private(set) var signInError: String?
     private(set) var lastUpdated: Date?
+    /// Context window of the most recent Claude Code session; read from disk,
+    /// independent of the usage API and of being signed in.
+    private(set) var contextUsage: ContextUsage?
     /// Advances every second so reset countdowns stay live without refetching.
     private(set) var tick = Date.now
 
@@ -44,6 +47,7 @@ final class UsageStore {
         credentials = CredentialStore.load()
         if credentials != nil { phase = .loading }
         startClock()
+        Task { await refreshContext() }
     }
 
     // MARK: - Lifecycle
@@ -55,6 +59,7 @@ final class UsageStore {
             while !Task.isCancelled {
                 guard let self else { return }
                 await self.refresh()
+                await self.refreshContext()
                 try? await Task.sleep(for: .seconds(self.preferences.refreshInterval))
             }
         }
@@ -81,6 +86,9 @@ final class UsageStore {
 
     /// Called when the panel opens; avoids hammering a rate-limited endpoint.
     func refreshIfStale(maxAge: TimeInterval = 15) {
+        // Context comes from disk and moves faster than the usage windows, so
+        // it is re-read on every panel open rather than being age-gated.
+        Task { await refreshContext() }
         guard isSignedIn else { return }
         if let lastUpdated, lastUpdated.timeIntervalSinceNow > -maxAge { return }
         Task { await refresh() }
@@ -92,6 +100,14 @@ final class UsageStore {
         inFlight = task
         await task.value
         inFlight = nil
+    }
+
+    /// Re-reads the newest transcript. Cheap, but it touches the filesystem, so
+    /// it runs off the main actor.
+    func refreshContext() async {
+        contextUsage = await Task.detached(priority: .utility) {
+            ContextReader.currentSession()
+        }.value
     }
 
     private func performRefresh() async {

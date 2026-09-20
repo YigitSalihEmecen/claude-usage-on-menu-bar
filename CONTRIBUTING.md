@@ -54,6 +54,24 @@ known shapes so a change surfaces as a test failure rather than a blank panel.
 Despite the name, the "weekly" window is widely observed to reset every 72 hours.
 The app shows whatever reset timestamp the API returns rather than assuming a period.
 
+## How context is read
+
+Claude Code appends one JSON object per line to
+`~/.claude/projects/<slug>/<session-id>.jsonl`. `Model/ContextUsage.swift` takes the
+most recently modified transcript across every project, so the reading follows
+whichever session you touched last, and reads the `usage` block off the last
+assistant line. Context used is `input + cache_creation + cache_read + output` —
+cached tokens still occupy the window. Sidechain lines are subagent turns and are
+skipped, since they do not consume the session's own context.
+
+Transcripts reach tens of megabytes, so the file is never read whole: the reader
+tails the last 256KB and scans backwards, retrying at 4MB when a run of large tool
+results fills the first window. The context limit comes from the model recorded on
+the turn (200K for Haiku, 1M otherwise), not from a constant.
+
+This is local and read-only; it adds no network calls. The transcript format is
+undocumented, so decoding ignores unknown fields and `Tests/` pins the shape.
+
 ## Authentication
 
 Authorization Code + PKCE against claude.ai, using Claude Code's client ID because

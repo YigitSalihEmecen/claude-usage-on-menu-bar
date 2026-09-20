@@ -71,6 +71,9 @@ final class StatusItemController {
         if display.showsTime, let resetsAt = session?.resetsAt {
             parts.append(Format.countdown(to: resetsAt, from: store.tick, compact: true))
         }
+        if store.preferences.showContextInMenuBar, let context = store.contextUsage {
+            parts.append("ctx \(context.percent)%")
+        }
 
         button.attributedTitle = attributed(parts.joined(separator: " · "), tint: tint)
         button.toolTip = tooltip()
@@ -94,6 +97,12 @@ final class StatusItemController {
             return "\(window.title): \(window.percent)%\(reset)"
         }
         if lines.isEmpty { lines = ["No active usage windows"] }
+        if let context = store.contextUsage {
+            lines.append(
+                "Context (\(context.project)): \(context.percent)% · "
+                    + "\(Format.tokens(context.tokens)) of \(Format.compactTokens(context.limit))"
+            )
+        }
         return lines.joined(separator: "\n")
     }
 }
