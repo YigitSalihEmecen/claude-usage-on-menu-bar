@@ -8,7 +8,7 @@
 See how much Claude usage you have left, right in your menu bar — no need to open
 the app to check.
 
-<img width="607" height="46" alt="image" src="https://github.com/user-attachments/assets/b21de41f-e372-4a7e-a63a-e650f28e783f" />
+<img width="562" height="42" alt="image" src="https://github.com/user-attachments/assets/fcae62cd-9313-4f11-ad8a-431848a8f959" />
 
 <img width="685" height="405" alt="image" src="https://github.com/user-attachments/assets/698b2884-950d-4389-8148-e8b48aa59267" />
 
