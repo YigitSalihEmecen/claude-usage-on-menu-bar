@@ -114,7 +114,9 @@ jobs:
           claude-usage --version
           test -f /usr/share/applications/io.github.YigitSalihEmecen.ClaudeUsage.desktop
           test -f /usr/share/icons/hicolor/scalable/apps/io.github.YigitSalihEmecen.ClaudeUsage.svg
-          test -f /usr/share/man/man1/claude-usage.1.gz
+          # Ubuntu's container images tell dpkg to skip man pages, so check the package
+          # contents rather than the filesystem.
+          dpkg -L claude-usage | grep -qx /usr/share/man/man1/claude-usage.1.gz
 
       - name: Start the app
         run: |
