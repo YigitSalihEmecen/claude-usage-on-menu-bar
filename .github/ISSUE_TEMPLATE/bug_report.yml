@@ -1,0 +1,42 @@
+name: Bug report
+description: Something is wrong or stopped working
+labels: [bug]
+body:
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Platform
+      options:
+        - macOS
+        - Ubuntu / Debian (.deb)
+        - Other Linux (tarball or make install)
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown at the bottom of the settings page, or run `claude-usage --version` on Linux.
+      placeholder: "1.2.0"
+    validations:
+      required: true
+  - type: input
+    id: system
+    attributes:
+      label: System
+      description: macOS version, or Linux distribution and desktop (for example "Ubuntu 24.04, GNOME on Wayland").
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What you expected, and what you saw instead. Screenshots help.
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: On Linux, the output of `claude-usage --verbose` run from a terminal. Remove anything private.
+      render: shell

@@ -11,8 +11,11 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  macos:
     runs-on: macos-15
+    defaults:
+      run:
+        working-directory: macos
     steps:
       - uses: actions/checkout@v4
 
@@ -31,3 +34,101 @@ jobs:
 
       - name: Verify both architectures are present
         run: lipo -archs "build/Claude Usage.app/Contents/MacOS/ClaudeUsage" | tee /dev/stderr | grep -q arm64
+
+  linux:
+    name: linux (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-22.04, ubuntu-24.04]
+    defaults:
+      run:
+        working-directory: linux
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            python3-gi python3-gi-cairo gir1.2-gtk-3.0 \
+            gir1.2-ayatanaappindicator3-0.1 gir1.2-secret-1 \
+            xvfb dbus appstream desktop-file-utils
+
+      - name: Lint
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          python3 -m venv "$RUNNER_TEMP/lint"
+          "$RUNNER_TEMP/lint/bin/pip" install --quiet ruff==0.16.10
+          "$RUNNER_TEMP/lint/bin/ruff" check .
+          "$RUNNER_TEMP/lint/bin/ruff" format --check .
+
+      - name: Run tests
+        run: xvfb-run -a dbus-run-session -- make test
+
+      - name: Validate desktop entry and metadata
+        run: |
+          desktop-file-validate packaging/io.github.YigitSalihEmecen.ClaudeUsage.desktop
+          appstreamcli validate --no-net packaging/io.github.YigitSalihEmecen.ClaudeUsage.metainfo.xml
+
+      - name: Build packages
+        run: |
+          make deb
+          make dist
+
+      - uses: actions/upload-artifact@v4
+        if: matrix.os == 'ubuntu-22.04'
+        with:
+          name: linux-packages
+          path: |
+            linux/dist/*.deb
+            linux/dist/*.tar.gz
+          if-no-files-found: error
+
+  # Installs the built .deb into clean distribution images, the way a user would,
+  # and checks that the app starts.
+  linux-install:
+    name: install (${{ matrix.image }})
+    needs: linux
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        image: ["ubuntu:22.04", "ubuntu:24.04", "debian:12"]
+    container: ${{ matrix.image }}
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: linux-packages
+
+      - name: Install the package
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ./claude-usage_*_all.deb xvfb xauth dbus
+
+      - name: Check the installation
+        run: |
+          claude-usage --version
+          test -f /usr/share/applications/io.github.YigitSalihEmecen.ClaudeUsage.desktop
+          test -f /usr/share/icons/hicolor/scalable/apps/io.github.YigitSalihEmecen.ClaudeUsage.svg
+          test -f /usr/share/man/man1/claude-usage.1.gz
+
+      - name: Start the app
+        run: |
+          # The tray has no host here, so this checks that startup survives and the
+          # process stays up, which exercises every import and the keyring fallback.
+          set +e
+          xvfb-run -a dbus-run-session -- timeout 10 claude-usage --background --verbose 2> app.log
+          status=$?
+          cat app.log
+          if [ "$status" -ne 124 ]; then echo "expected the app to keep running (exit 124), got $status"; exit 1; fi
+          if grep -q Traceback app.log; then exit 1; fi
+
+      - name: Remove the package
+        run: |
+          apt-get remove -y claude-usage
+          test ! -e /usr/bin/claude-usage
+          test ! -d /usr/share/claude-usage

@@ -1,7 +1,8 @@
 name: release
 
-# Publishes a DMG whenever a v* tag is pushed:
-#   git tag v1.0.0 && git push origin v1.0.0
+# Publishes one release per version, with the downloads for every platform, whenever
+# a v* tag is pushed:
+#   git tag v1.2.0 && git push origin v1.2.0
 on:
   push:
     tags: ['v*']
@@ -12,31 +13,44 @@ on:
         required: true
 
 permissions:
-  contents: write
+  contents: read
+
+env:
+  TAG: ${{ inputs.tag || github.ref_name }}
 
 jobs:
-  release:
-    runs-on: macos-15
+  # Every platform's version must match the tag, or the files would be misnamed.
+  verify:
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: ${{ env.TAG }}
 
-      - name: Check the tag matches the bundle version
+      - name: Check the tag matches every version
         run: |
-          TAG="${{ inputs.tag || github.ref_name }}"
-          VERSION="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' Resources/Info.plist)"
-          if [ "$TAG" != "v$VERSION" ]; then
-            echo "tag $TAG does not match CFBundleShortVersionString $VERSION" >&2
-            exit 1
-          fi
+          macos="$(sed -n '/CFBundleShortVersionString/{n;s/.*<string>\(.*\)<\/string>.*/\1/p;}' macos/Resources/Info.plist)"
+          linux="$(sed -n 's/^__version__ = "\(.*\)"/\1/p' linux/claude_usage/__init__.py)"
+          echo "tag=$TAG macos=$macos linux=$linux"
+          [ "$TAG" = "v$macos" ] || { echo "tag $TAG does not match the macOS version $macos" >&2; exit 1; }
+          [ "$TAG" = "v$linux" ] || { echo "tag $TAG does not match the Linux version $linux" >&2; exit 1; }
+          grep -q "^## \[$macos\]" CHANGELOG.md || { echo "CHANGELOG.md has no entry for $macos" >&2; exit 1; }
+
+  macos:
+    needs: verify
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: macos
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
 
       - name: Toolchain
         run: |
           swift --version
           xcodebuild -version || true
-          echo "xcode-select -p: $(xcode-select -p)"
-          ls "$(xcode-select -p)/Platforms/MacOSX.platform/Developer/Library/Frameworks" 2>/dev/null | grep -i testing || true
 
       - name: Run tests
         run: Scripts/test.sh
@@ -44,22 +58,70 @@ jobs:
       - name: Build and package
         run: Scripts/package.sh
 
-      - name: Publish release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macos
+          path: macos/build/*.dmg
+          if-no-files-found: error
+
+  linux:
+    needs: verify
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: linux
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            python3-gi python3-gi-cairo gir1.2-gtk-3.0 \
+            gir1.2-ayatanaappindicator3-0.1 gir1.2-secret-1 xvfb dbus
+
+      - name: Run tests
+        run: xvfb-run -a dbus-run-session -- make test
+
+      - name: Build packages
+        run: |
+          make deb
+          make dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: linux
+          path: |
+            linux/dist/*.deb
+            linux/dist/*.tar.gz
+          if-no-files-found: error
+
+  publish:
+    needs: [macos, linux]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ env.TAG }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          merge-multiple: true
+
+      - name: Create the release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ inputs.tag || github.ref_name }}
         run: |
-          {
-            sed -e "s|@TAG@|$TAG|g" .github/release-notes.md
-            echo
-            echo '### Checksum'
-            echo
-            echo '```'
-            shasum -a 256 build/*.dmg | sed 's|build/||'
-            echo '```'
-          } > notes.md
+          ls -l artifacts
+          (cd artifacts && sha256sum * > SHA256SUMS)
+          python3 scripts/release-notes.py "$TAG" artifacts/SHA256SUMS > notes.md
 
-          gh release create "$TAG" build/*.dmg \
+          gh release create "$TAG" artifacts/* \
             --title "Claude Usage ${TAG#v}" \
             --notes-file notes.md \
             --verify-tag

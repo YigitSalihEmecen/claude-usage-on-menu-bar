@@ -4,6 +4,23 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-10-06
+
+### Added
+
+- Claude Usage for Linux. A native GTK 3 tray app for Ubuntu, Debian and other
+  desktops that supports the AppIndicator protocol, with the same features as the
+  macOS app: session usage and time until reset in the tray, weekly and per-model
+  limits, extra usage, context window usage, browser sign-in with a paste-the-code
+  fallback, and reuse of an existing Claude Code login. Tokens are kept in the
+  desktop keyring. Released as a `.deb` package and a source tarball.
+
+### Changed
+
+- The macOS sources moved into `macos/`, next to the new `linux/` directory. Each
+  release now carries the downloads for every platform. The macOS app itself is
+  unchanged in this version; its version number moves in step with Linux.
+
 ## [1.1.0] - 2026-09-20
 
 ### Added
