@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.YigitSalihEmecen.ClaudeUsage</id>
+  <name>Claude Usage</name>
+  <summary>See how much Claude usage you have left, in your system tray</summary>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>MIT</project_license>
+  <developer id="io.github.yigitsalihemecen">
+    <name>Yigit Salih Emecen</name>
+  </developer>
+  <description>
+    <p>
+      Claude Usage keeps your Claude session and weekly limits one glance away. A progress
+      ring and the time until reset sit in your system tray; open the panel for weekly and
+      per-model limits and exact reset times.
+    </p>
+    <ul>
+      <li>Session usage and time until reset, always visible and refreshed every minute.</li>
+      <li>Weekly limits, per-model limits, and extra usage in the panel.</li>
+      <li>Context window usage for your most recent Claude Code session, read locally.</li>
+      <li>Sign in with your browser, or reuse your existing Claude Code login.</li>
+    </ul>
+    <p>
+      This is an unofficial app and is not affiliated with or endorsed by Anthropic.
+    </p>
+  </description>
+  <launchable type="desktop-id">io.github.YigitSalihEmecen.ClaudeUsage.desktop</launchable>
+  <provides>
+    <binary>claude-usage</binary>
+  </provides>
+  <url type="homepage">https://github.com/YigitSalihEmecen/claude-usage-on-menu-bar</url>
+  <url type="bugtracker">https://github.com/YigitSalihEmecen/claude-usage-on-menu-bar/issues</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/YigitSalihEmecen/claude-usage-on-menu-bar/main/docs/images/linux-panel.png</image>
+      <caption>The usage panel</caption>
+    </screenshot>
+  </screenshots>
+  <categories>
+    <category>Utility</category>
+  </categories>
+  <content_rating type="oars-1.1"/>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <releases>
+    <release version="1.2.0" date="2026-10-06">
+      <description>
+        <p>First release for Linux.</p>
+      </description>
+    </release>
+  </releases>
+</component>

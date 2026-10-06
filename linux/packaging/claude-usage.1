@@ -1,0 +1,46 @@
+.TH CLAUDE-USAGE 1 "October 2026" "claude-usage @VERSION@" "User Commands"
+.SH NAME
+claude-usage \- Claude usage limits in your system tray
+.SH SYNOPSIS
+.B claude-usage
+[\fB\-\-background\fR] [\fB\-\-verbose\fR] [\fB\-\-version\fR]
+.SH DESCRIPTION
+Shows how much of your Claude session and weekly usage limits you have left, as a
+progress ring and countdown in the system tray. Opening the tray menu or running
+\fBclaude-usage\fR again brings up a panel with weekly limits, per-model limits and
+the context window of your most recent Claude Code session.
+.PP
+Running the command while the app is already running opens its panel.
+.SH OPTIONS
+.TP
+.B \-\-background
+Start in the tray without opening the panel. Used by the "Start at login" setting.
+.TP
+.B \-\-verbose
+Log debugging information to standard error.
+.TP
+.B \-\-version
+Print the version and exit.
+.SH FILES
+.TP
+.I ~/.config/claude-usage/settings.json
+Preferences.
+.TP
+.I ~/.config/claude-usage/credentials.json
+Sign-in tokens, only when no desktop keyring is available. Otherwise tokens are
+kept in the keyring.
+.TP
+.I ~/.claude/.credentials.json
+Claude Code's own login, read when you choose "Use my Claude Code login".
+.TP
+.I ~/.claude/projects
+Claude Code session transcripts, read locally for context window usage.
+.SH ENVIRONMENT
+.TP
+.B CLAUDE_CONFIG_DIR
+Overrides Claude Code's configuration directory (default \fI~/.claude\fR).
+.SH BUGS
+Report bugs at https://github.com/YigitSalihEmecen/claude-usage-on-menu-bar/issues
+.PP
+This is an unofficial app, not affiliated with or endorsed by Anthropic. It reads an
+undocumented endpoint that may change without notice.

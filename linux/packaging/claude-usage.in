@@ -1,0 +1,10 @@
+#!/usr/bin/python3
+# Launcher for Claude Usage. The system Python is used on purpose: PyGObject and
+# GTK come from the distribution, not from a virtualenv.
+import sys
+
+sys.path.insert(0, "@LIBDIR@")
+
+from claude_usage.app import main  # noqa: E402
+
+sys.exit(main())

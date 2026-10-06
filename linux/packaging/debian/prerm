@@ -1,0 +1,13 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "remove" ] || [ "$1" = "upgrade" ]; then
+    if command -v py3clean >/dev/null 2>&1; then
+        py3clean -p claude-usage
+    else
+        find /usr/share/claude-usage -name '*.py[co]' -delete 2>/dev/null || true
+        find /usr/share/claude-usage -name __pycache__ -type d -empty -delete 2>/dev/null || true
+    fi
+fi
+
+exit 0

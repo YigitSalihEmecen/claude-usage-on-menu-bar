@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "claude-usage"
+dynamic = ["version"]
+description = "Claude usage limits in your system tray"
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.10"
+# PyGObject, GTK 3 and the tray library come from the distribution, not PyPI.
+dependencies = []
+
+[project.scripts]
+claude-usage = "claude_usage.app:main"
+
+[tool.setuptools]
+packages = ["claude_usage", "claude_usage.ui"]
+
+[tool.setuptools.dynamic]
+version = { attr = "claude_usage.__version__" }
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "SIM"]

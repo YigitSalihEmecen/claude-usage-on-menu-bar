@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Claude Usage
+GenericName=Usage Monitor
+Comment=See how much Claude usage you have left, right in your system tray
+Exec=claude-usage
+Icon=io.github.YigitSalihEmecen.ClaudeUsage
+Terminal=false
+Categories=Utility;
+Keywords=Claude;Anthropic;usage;limits;tray;indicator;

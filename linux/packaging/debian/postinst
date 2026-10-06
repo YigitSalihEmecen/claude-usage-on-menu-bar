@@ -1,0 +1,8 @@
+#!/bin/sh
+set -e
+
+if [ "$1" = "configure" ] && command -v py3compile >/dev/null 2>&1; then
+    py3compile -p claude-usage /usr/share/claude-usage
+fi
+
+exit 0

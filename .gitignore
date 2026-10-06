@@ -1,5 +1,16 @@
+# macOS / Swift
 .build/
-build/
 .swiftpm/
 *.xcodeproj
 .DS_Store
+
+# Build output
+build/
+dist/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ruff_cache/
+.venv/
